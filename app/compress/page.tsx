@@ -88,14 +88,20 @@ export default function CompressPage() {
         throw new Error('无法获取 Canvas 上下文');
       }
 
+      // 如果是 PNG 且有透明通道，先填充白色背景
+      if (selectedFile.type === 'image/png') {
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+
       // 使用更好的图像渲染质量
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = 'high';
       ctx.drawImage(img, 0, 0);
 
-      // 根据原始文件类型选择输出格式
-      const outputFormat = selectedFile.type === 'image/png' ? 'image/png' : 'image/jpeg';
-      const qualityValue = outputFormat === 'image/png' ? 1 : quality / 100;
+      // 统一使用 JPEG 格式进行压缩（JPEG 支持质量参数）
+      const outputFormat = 'image/jpeg';
+      const qualityValue = quality / 100;
 
       canvas.toBlob(
         (blob) => {
@@ -129,11 +135,10 @@ export default function CompressPage() {
     const url = URL.createObjectURL(compressedBlob);
     a.href = url;
 
-    // 保持原始文件扩展名
+    // 压缩后统一使用 .jpg 扩展名
     const originalName = selectedFile.name;
     const nameWithoutExt = originalName.substring(0, originalName.lastIndexOf('.')) || originalName;
-    const ext = originalName.substring(originalName.lastIndexOf('.')) || '.jpg';
-    a.download = `${nameWithoutExt}_compressed${ext}`;
+    a.download = `${nameWithoutExt}_compressed.jpg`;
 
     document.body.appendChild(a);
     a.click();
@@ -266,7 +271,8 @@ export default function CompressPage() {
                     {imageDimensions && (
                       <p>尺寸: {imageDimensions.width} × {imageDimensions.height} 像素</p>
                     )}
-                    <p>格式: {selectedFile.type.split('/')[1].toUpperCase()}</p>
+                    <p>输入格式: {selectedFile.type.split('/')[1].toUpperCase()}</p>
+                    <p>输出格式: JPEG (更好的压缩效果)</p>
                   </div>
                 </div>
 
