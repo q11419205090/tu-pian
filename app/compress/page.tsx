@@ -489,6 +489,151 @@ export default function CompressPage() {
             </div>
           </div>
         </div>
+
+        {/* 功能特点 */}
+        <div className="mt-8 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-gray-800 dark:to-gray-700 rounded-2xl shadow-lg p-8">
+          <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white text-center">
+            功能特点
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 text-center hover:shadow-xl transition-shadow">
+              <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <h3 className="font-bold text-gray-800 dark:text-white mb-2">
+                极速压缩
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">
+                本地处理，无需上传服务器，秒级完成压缩，保护隐私安全
+              </p>
+            </div>
+
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 text-center hover:shadow-xl transition-shadow">
+              <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 className="font-bold text-gray-800 dark:text-white mb-2">
+                高质量输出
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">
+                智能压缩算法，在减小文件大小的同时保持图片清晰度
+              </p>
+            </div>
+
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 text-center hover:shadow-xl transition-shadow">
+              <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                </svg>
+              </div>
+              <h3 className="font-bold text-gray-800 dark:text-white mb-2">
+                灵活调节
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">
+                10%-100% 自由调节压缩质量，满足不同使用场景需求
+              </p>
+            </div>
+
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 text-center hover:shadow-xl transition-shadow">
+              <div className="w-16 h-16 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <h3 className="font-bold text-gray-800 dark:text-white mb-2">
+                多格式支持
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">
+                支持 PNG、JPG、JPEG、WEBP 等主流图片格式输入
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* 使用建议 */}
+        <div className="mt-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
+          <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white">
+            使用建议
+          </h2>
+          <div className="space-y-6">
+            <div className="border-l-4 border-blue-500 pl-4">
+              <h3 className="font-semibold text-gray-800 dark:text-white mb-2 flex items-center gap-2">
+                <span className="text-blue-500">📱</span>
+                社交媒体分享
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">
+                推荐质量：<span className="font-semibold text-blue-600">70-80%</span>
+              </p>
+              <p className="text-sm text-gray-600 dark:text-gray-300">
+                适合微信、微博、朋友圈等社交平台分享，在保证清晰度的同时大幅减小文件体积，加快上传和加载速度。
+              </p>
+            </div>
+
+            <div className="border-l-4 border-green-500 pl-4">
+              <h3 className="font-semibold text-gray-800 dark:text-white mb-2 flex items-center gap-2">
+                <span className="text-green-500">🌐</span>
+                网站使用
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">
+                推荐质量：<span className="font-semibold text-green-600">75-85%</span>
+              </p>
+              <p className="text-sm text-gray-600 dark:text-gray-300">
+                适合网站、博客、电商平台等场景，平衡图片质量和加载速度，提升用户体验和 SEO 表现。
+              </p>
+            </div>
+
+            <div className="border-l-4 border-purple-500 pl-4">
+              <h3 className="font-semibold text-gray-800 dark:text-white mb-2 flex items-center gap-2">
+                <span className="text-purple-500">🖨️</span>
+                打印输出
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">
+                推荐质量：<span className="font-semibold text-purple-600">85-95%</span>
+              </p>
+              <p className="text-sm text-gray-600 dark:text-gray-300">
+                适合需要打印的图片，保持高质量的同时适度压缩，确保打印效果清晰细腻。
+              </p>
+            </div>
+
+            <div className="border-l-4 border-orange-500 pl-4">
+              <h3 className="font-semibold text-gray-800 dark:text-white mb-2 flex items-center gap-2">
+                <span className="text-orange-500">📧</span>
+                邮件附件
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">
+                推荐质量：<span className="font-semibold text-orange-600">60-75%</span>
+              </p>
+              <p className="text-sm text-gray-600 dark:text-gray-300">
+                适合作为邮件附件发送，大幅减小文件大小，避免超出邮件附件大小限制，加快发送和接收速度。
+              </p>
+            </div>
+
+            <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4 mt-6">
+              <div className="flex gap-3">
+                <div className="flex-shrink-0">
+                  <svg className="w-6 h-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-yellow-800 dark:text-yellow-300 mb-1">
+                    温馨提示
+                  </h4>
+                  <ul className="text-sm text-yellow-700 dark:text-yellow-400 space-y-1">
+                    <li>• 压缩前建议保留原图备份，压缩是不可逆的过程</li>
+                    <li>• 已经压缩过的图片再次压缩效果不明显，可能导致质量下降</li>
+                    <li>• 图片尺寸越大，压缩效果越明显</li>
+                    <li>• 所有处理均在本地完成，不会上传到服务器，请放心使用</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
