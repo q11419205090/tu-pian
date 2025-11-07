@@ -12,6 +12,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // 检查文件大小（限制为 10MB）
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (imageFile.size > maxSize) {
+      return NextResponse.json(
+        { error: '图片文件过大，请上传小于10MB的图片' },
+        { status: 400 }
+      );
+    }
+
     // 将图片转换为 base64
     const bytes = await imageFile.arrayBuffer();
     const buffer = Buffer.from(bytes);
@@ -31,6 +40,14 @@ export async function POST(request: NextRequest) {
 
     // 构建 data URL
     const dataUrl = `data:image/${imageFormat};base64,${base64Image}`;
+
+    console.log('Image info:', {
+      fileName: imageFile.name,
+      fileSize: imageFile.size,
+      mimeType: imageFile.type,
+      imageFormat: imageFormat,
+      base64Length: base64Image.length,
+    });
 
     // 调用火山引擎 API
     const response = await fetch('https://ark.cn-beijing.volces.com/api/v3/chat/completions', {
@@ -64,8 +81,10 @@ export async function POST(request: NextRequest) {
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Volcano API error:', errorText);
+      console.error('Response status:', response.status);
+      console.error('Response headers:', response.headers);
       return NextResponse.json(
-        { error: '图片识别失败，请稍后重试' },
+        { error: `图片识别失败：${errorText || '请稍后重试'}` },
         { status: response.status }
       );
     }
