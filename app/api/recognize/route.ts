@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// Vercel 配置：增加函数超时时间和请求体大小限制
+export const maxDuration = 60; // 最大执行时间 60 秒
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
@@ -12,11 +16,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 检查文件大小（限制为 10MB）
-    const maxSize = 10 * 1024 * 1024; // 10MB
+    // 检查文件大小（Vercel 限制，Base64 编码后约增加 33%，所以限制为 3MB）
+    const maxSize = 3 * 1024 * 1024; // 3MB
     if (imageFile.size > maxSize) {
       return NextResponse.json(
-        { error: '图片文件过大，请上传小于10MB的图片' },
+        { error: '图片文件过大，请上传小于3MB的图片（Vercel 部署限制）' },
         { status: 400 }
       );
     }
@@ -47,9 +51,21 @@ export async function POST(request: NextRequest) {
       mimeType: imageFile.type,
       imageFormat: imageFormat,
       base64Length: base64Image.length,
+      estimatedRequestSize: Math.round(base64Image.length / 1024) + ' KB'
     });
 
+    // 检查 base64 大小是否会超过 Vercel 限制
+    const estimatedSize = base64Image.length;
+    const maxBase64Size = 4 * 1024 * 1024; // 4MB base64 限制
+    if (estimatedSize > maxBase64Size) {
+      return NextResponse.json(
+        { error: '图片编码后过大，请尝试上传更小的图片或压缩后再上传' },
+        { status: 413 }
+      );
+    }
+
     // 调用火山引擎 API
+    console.log('Calling Volcano API...');
     const response = await fetch('https://ark.cn-beijing.volces.com/api/v3/chat/completions', {
       method: 'POST',
       headers: {
@@ -101,8 +117,23 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Error recognizing image:', error);
+
+    // 提供更详细的错误信息
+    let errorMessage = '服务器错误，请稍后重试';
+
+    if (error instanceof Error) {
+      // 检查是否是网络错误
+      if (error.message.includes('fetch') || error.message.includes('network')) {
+        errorMessage = '网络连接失败，请检查网络后重试';
+      } else if (error.message.includes('timeout')) {
+        errorMessage = '请求超时，图片可能过大，请尝试上传较小的图片';
+      } else {
+        errorMessage = `处理失败：${error.message}`;
+      }
+    }
+
     return NextResponse.json(
-      { error: '服务器错误，请稍后重试' },
+      { error: errorMessage },
       { status: 500 }
     );
   }

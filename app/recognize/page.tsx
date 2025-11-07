@@ -14,6 +14,13 @@ export default function RecognizePage() {
 
   const handleFileSelect = (file: File) => {
     if (file && file.type.startsWith('image/')) {
+      // 检查文件大小（Vercel 部署限制为 3MB）
+      const maxSize = 3 * 1024 * 1024; // 3MB
+      if (file.size > maxSize) {
+        setError('图片文件过大，请上传小于3MB的图片');
+        return;
+      }
+
       // 清理旧的 URL
       if (previewUrl) URL.revokeObjectURL(previewUrl);
 
@@ -182,7 +189,7 @@ export default function RecognizePage() {
                       <span className="font-semibold">点击上传</span> 或拖拽图片到此处
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-400">
-                      支持 PNG, JPG, JPEG, WEBP
+                      支持 PNG, JPG, JPEG, WEBP（最大 3MB）
                     </p>
                   </div>
                 )}
