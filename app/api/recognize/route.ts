@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'ep-20250921140145-v9tg9',
+        model: 'ep-20251107102053-4xcpg',
         messages: [
           {
             role: 'user',
