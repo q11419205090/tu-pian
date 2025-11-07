@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 interface GeneratedImage {
@@ -15,6 +15,7 @@ export default function GeneratePage() {
   const [size, setSize] = useState<string>('1024x1024');
   const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
+  const [previewImage, setPreviewImage] = useState<GeneratedImage | null>(null);
 
   const styles = [
     { value: 'realistic', label: '写实风格', icon: '📷' },
@@ -33,11 +34,23 @@ export default function GeneratePage() {
   ];
 
   const examplePrompts = [
-    '一只可爱的橘猫坐在窗台上看着外面的雨',
-    '未来城市的夜景，霓虹灯闪烁',
-    '宁静的湖面上倒映着雪山',
-    '一个魔法森林，发光的蘑菇和萤火虫'
+    '星际穿越，黑洞，黑洞里冲出一辆快支离破碎的复古列车，抢视觉冲击力，电影大片，末日既视感，动感，对比色，oc 渲染，光线追踪，动态模糊，景深，超现实主义，深蓝，画面通过细腻的丰富的色彩层次塑造主体与场景，质感真实，暗黑风背景的光影效果营造出氛围，整体兼具艺术幻想感，夸张的广角透视效果，耀光，反射，极致的光影，强引力，吞噬',
+    '未来科技城市，赛博朋克风格，霓虹灯光，高楼大厦，飞行汽车，夜晚，雨后街道反光，8K超高清',
+    '中国古风山水画，水墨风格，群山云海，仙鹤飞翔，瀑布流水，意境深远',
+    '一只可爱的橘猫坐在窗台上看着外面的雨，温暖的阳光，治愈系风格'
   ];
+
+  // ESC key to close preview
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && previewImage) {
+        setPreviewImage(null);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [previewImage]);
 
   const generateImage = async () => {
     if (!prompt.trim()) {
@@ -47,17 +60,37 @@ export default function GeneratePage() {
 
     setIsGenerating(true);
 
-    // 模拟生成过程
-    setTimeout(() => {
-      // 这里应该调用实际的AI生图API
-      const newImage: GeneratedImage = {
-        url: `https://picsum.photos/seed/${Date.now()}/1024/1024`,
-        prompt: prompt,
-        timestamp: Date.now()
-      };
-      setGeneratedImages([newImage, ...generatedImages]);
+    try {
+      const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || '生成失败');
+      }
+
+      if (data.success && data.imageUrl) {
+        const newImage: GeneratedImage = {
+          url: data.imageUrl,
+          prompt: prompt,
+          timestamp: Date.now()
+        };
+        setGeneratedImages([newImage, ...generatedImages]);
+      } else {
+        throw new Error('未能获取生成的图片');
+      }
+    } catch (err) {
+      console.error('生图失败:', err);
+      alert((err as Error).message || '生成失败，请稍后重试');
+    } finally {
       setIsGenerating(false);
-    }, 3000);
+    }
   };
 
   const downloadImage = (url: string, prompt: string) => {
@@ -208,25 +241,36 @@ export default function GeneratePage() {
                   {generatedImages.map((image) => (
                     <div
                       key={image.timestamp}
-                      className="group relative overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-700"
+                      className="group relative overflow-hidden rounded-xl bg-white dark:bg-gray-700 shadow-lg cursor-pointer border-2 border-gray-200 dark:border-gray-600 hover:border-green-500 transition-all"
+                      onClick={() => setPreviewImage(image)}
                     >
-                      <img
-                        src={image.url}
-                        alt={image.prompt}
-                        className="w-full h-64 object-cover"
-                      />
-                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-end">
-                        <div className="p-4 w-full transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                          <p className="text-white text-sm mb-3 line-clamp-2">
-                            {image.prompt}
-                          </p>
-                          <button
-                            onClick={() => downloadImage(image.url, image.prompt)}
-                            className="w-full bg-white text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors"
-                          >
-                            下载图片
-                          </button>
+                      {/* Image Container with proper aspect ratio */}
+                      <div className="relative w-full h-64 bg-gray-100 dark:bg-gray-800">
+                        <img
+                          src={image.url}
+                          alt={image.prompt}
+                          className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><rect width="400" height="300" fill="%23f3f4f6"/><text x="50%" y="50%" text-anchor="middle" fill="%239ca3af">图片加载失败</text></svg>';
+                          }}
+                        />
+
+                        {/* Zoom icon in corner - only visible on hover */}
+                        <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                          <div className="bg-white dark:bg-gray-800 rounded-full p-2 shadow-lg">
+                            <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                            </svg>
+                          </div>
                         </div>
+                      </div>
+
+                      {/* Prompt text at bottom */}
+                      <div className="p-4 bg-white dark:bg-gray-800">
+                        <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-2">
+                          {image.prompt}
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -272,6 +316,65 @@ export default function GeneratePage() {
           </div>
         </div>
       </div>
+
+      {/* Image Preview Modal */}
+      {previewImage && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90 p-4 animate-fadeIn"
+          onClick={() => setPreviewImage(null)}
+        >
+          <div className="relative max-w-7xl max-h-full" onClick={(e) => e.stopPropagation()}>
+            {/* Close Button */}
+            <button
+              onClick={() => setPreviewImage(null)}
+              className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors"
+            >
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            {/* Image */}
+            <img
+              src={previewImage.url}
+              alt={previewImage.prompt}
+              className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl"
+            />
+
+            {/* Image Info */}
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black to-transparent p-6 rounded-b-lg">
+              <p className="text-white text-sm mb-4">
+                {previewImage.prompt}
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    downloadImage(previewImage.url, previewImage.prompt);
+                  }}
+                  className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  下载图片
+                </button>
+                <button
+                  onClick={() => setPreviewImage(null)}
+                  className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
+                >
+                  关闭
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Click Outside Hint */}
+          <div className="absolute top-4 left-1/2 transform -translate-x-1/2 text-white text-sm opacity-70">
+            点击背景或按 ESC 关闭
+          </div>
+        </div>
+      )}
     </div>
   );
 }
